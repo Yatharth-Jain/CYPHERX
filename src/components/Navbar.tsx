@@ -18,7 +18,9 @@ export default function Navbar() {
       <DisplayDropDownMenu />
       <div onClick={() => {
         setTheme(theme === 'light' ? 'dark' : 'light')
-      }}>
+      }}
+      className='p-2 rounded-full cursor-pointer hover:bg-gray-600/30'
+      >
         {theme == 'light' ? <FaMoon /> : <FaSun />}
 
       </div>

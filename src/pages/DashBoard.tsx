@@ -139,7 +139,15 @@ export default function DashBoard() {
 
   return (
     <Wrapper className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[15px] h-[calc(100vh-70px)] overflow-y-auto py-4'>
-      {Groups?.map((group: any) => <TicketColumn key={group.id} title={group.title} icon={group.icon} tickets={group.tickets} />)}
+      {Groups?.map((group: any) => <TicketColumn key={group.id} title={group.title} icon={group.icon} tickets={group.tickets?.sort((a: Ticket, b: Ticket) => {
+        if (displayBy.Ordering === 'Priority') {
+          return (a.priority > b.priority) ? -1 : 1
+        }
+        else if (displayBy.Ordering === 'Title') {
+          return (a.title < b.title) ? -1 : 1
+        }
+        else return 0
+      })} />)}
     </Wrapper>
   )
 }
