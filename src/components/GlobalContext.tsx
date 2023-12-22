@@ -2,11 +2,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-const data = {
-  "id": "usr-1",
-  "name": "Anoop sharma",
-  "available": false
-}
 export type Ticket = {
   id: string;
   title: string;
@@ -27,6 +22,14 @@ interface GlobalContextProps {
   setTheme: React.Dispatch<React.SetStateAction<"light" | "dark">>
   tickets: Ticket[],
   users: User[]
+  displayBy: {
+    Grouping: 'Status' | 'Priority' | 'User';
+    Ordering: 'Priority' | 'Title';
+  };
+  setDisplayBy: React.Dispatch<React.SetStateAction<{
+    Grouping: 'Status' | 'Priority' | 'User';
+    Ordering: 'Priority' | 'Title';
+  }>>
 }
 
 
@@ -34,7 +37,12 @@ export const GlobalContext = createContext<GlobalContextProps>({
   theme: "light",
   setTheme: () => { },
   tickets: [],
-  users: []
+  users: [],
+  displayBy: {
+    Grouping: "Status",
+    Ordering: "Priority"
+  },
+  setDisplayBy: () => { }
 });
 
 export default function GlobalContextProvider({
@@ -42,11 +50,23 @@ export default function GlobalContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [theme, setTheme] = useState<'light' | 'dark'>(localStorage.getItem('theme') as ('light' | 'dark' | undefined) ?? 'light')
   const [tickets, setTickets] = useState<any[]>([])
   const [users, setUsers] = useState<any[]>([])
   const [refresh, setRefresh] = useState(false)
-  const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ""
+  const [displayBy, setDisplayBy] = useState<{
+    Grouping: 'Status' | 'Priority' | 'User';
+    Ordering: 'Priority' | 'Title';
+  }>(localStorage?.getItem('displayBy') ? JSON.parse(localStorage.getItem('displayBy') ?? "{}") : {
+    Grouping: "Status",
+    Ordering: "Priority"
+  })
+  const API_URL = process?.env?.NEXT_PUBLIC_API_URL ?? ""
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme)
+    localStorage.setItem('displayBy', JSON.stringify(displayBy))
+  }, [displayBy, theme])
 
   useEffect(() => {
     if (!refresh) {
@@ -64,7 +84,7 @@ export default function GlobalContextProvider({
   }, [refresh])
 
   return (
-    <GlobalContext.Provider value={{ theme, setTheme, tickets, users }}>
+    <GlobalContext.Provider value={{ theme, setTheme, tickets, users, displayBy, setDisplayBy }}>
       {children}
     </GlobalContext.Provider>
   );

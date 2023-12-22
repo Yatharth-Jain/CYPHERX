@@ -7,6 +7,12 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    screens:{
+      'sm': '500px',
+      'md': '720px',
+      'lg': '1000px',
+      'xl': '1200px',
+    },
     extend: {
       boxShadow: {
         "light-around": "0px 3px 8px 1px rgb(255 255 255 / 20%)",

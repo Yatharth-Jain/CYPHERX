@@ -14,7 +14,7 @@ export default function Navbar() {
     <Wrapper className='h-[70px] flex items-center justify-between' style={{
       background: ThemeColors[theme].NavbarBackground,
       color: ThemeColors[theme].NavbarColor,
-  }}>
+    }}>
       <DisplayDropDownMenu />
       <div onClick={() => {
         setTheme(theme === 'light' ? 'dark' : 'light')
@@ -27,7 +27,7 @@ export default function Navbar() {
 }
 
 const DisplayDropDownMenu = () => {
-  const { theme } = useContext(GlobalContext)
+  const { theme, displayBy, setDisplayBy } = useContext(GlobalContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   return (
     <div className='relative'>
@@ -39,22 +39,28 @@ const DisplayDropDownMenu = () => {
         <IoIosArrowDown className={`transition ${isMenuOpen && 'rotate-180'}`} />
       </ShadowContainer>
       {isMenuOpen &&
-        <ShadowContainer className='absolute top-[125%] flex flex-col gap-3 w-[300px]'>
-          <SelectMenu name='Grouping' label='Grouping' options={['Status', 'User', 'Priority']} theme={theme} />
-          <SelectMenu name='Ordering' label='Ordering' options={['Priority', 'Title']} theme={theme} />
+        <ShadowContainer className='absolute top-[125%] flex flex-col gap-3 w-[300px] z-10'>
+          <SelectMenu name='Grouping' label='Grouping' options={['Status', 'User', 'Priority']} theme={theme} value={displayBy.Grouping} setValue={(value) => {
+            setDisplayBy({ ...displayBy, Grouping: value })
+          }} />
+          <SelectMenu name='Ordering' label='Ordering' options={['Priority', 'Title']} theme={theme} value={displayBy.Ordering} setValue={(value) => {
+            setDisplayBy({ ...displayBy, Ordering: value })
+          }} />
         </ShadowContainer>
       }
     </div>
   )
 }
 
-const SelectMenu = ({ name, label, options, theme }: {
-  name: string; options: string[]; label: string; theme: 'light' | 'dark'
+const SelectMenu = ({ name, label, options, theme, setValue, value }: {
+  name: string; options: string[]; label: string; theme: 'light' | 'dark'; setValue: (val: any) => void; value: string
 }) => {
   return (
     <div className='flex justify-between'>
       <label htmlFor={name} className='text-heading'>{label}</label>
-      <select name={name} id={name} className='w-28 rounded border border-[#e6e7eb] pl-1' style={{
+      <select name={name} id={name} value={value} onChange={(e) => {
+        setValue(e.target.value)
+      }} className='w-28 rounded border border-[#e6e7eb] pl-1' style={{
         background: ThemeColors[theme].NavbarBackground,
         color: ThemeColors[theme].NavbarColor,
       }}>
