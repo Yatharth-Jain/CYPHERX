@@ -1,4 +1,4 @@
-import { ThemeColors } from '@/app/layout';
+import { ThemeColors } from '../Layout';
 import React, { useContext } from 'react'
 import { GlobalContext } from '../GlobalContext';
 

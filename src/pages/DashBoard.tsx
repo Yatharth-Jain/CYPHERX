@@ -6,6 +6,7 @@ import {
 import ShadowContainer from '@/components/atoms/ShadowContainer'
 import Wrapper from '@/components/atoms/Wrapper'
 import React, { useContext, useEffect } from 'react'
+import { IoMdRefresh } from "react-icons/io";
 
 const Statuses: any = {
   "Backlog": {
@@ -59,7 +60,7 @@ const PriorityOrder = ["0", "1", "2", "3", "4"]
 
 
 export default function DashBoard() {
-  const { displayBy, tickets, users } = useContext(GlobalContext)
+  const { displayBy, tickets, users, loading, refresh, setRefresh } = useContext(GlobalContext)
   const [Groups, setGroups] = React.useState<any>([])
 
   useEffect(() => {
@@ -138,8 +139,13 @@ export default function DashBoard() {
   }, [displayBy, tickets, users])
 
   return (
-    <Wrapper className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[15px] h-[calc(100vh-70px)] overflow-y-auto py-4'>
-      {Groups?.map((group: any) => <TicketColumn key={group.id} title={group.title} icon={group.icon} tickets={group.tickets?.sort((a: Ticket, b: Ticket) => {
+    <Wrapper className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[15px] h-[calc(100vh-70px)] overflow-y-auto py-4 relative'>
+      {(refresh || loading) && <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/4 left-1/2 scale-150" onClick={() => {
+        setRefresh(false)
+      }}>
+        <IoMdRefresh className={`${loading && 'animate-spin'}`}/>
+      </div>}
+      {(!refresh) && Groups?.map((group: any) => <TicketColumn key={group.id} title={group.title} icon={group.icon} tickets={group.tickets?.sort((a: Ticket, b: Ticket) => {
         if (displayBy.Ordering === 'Priority') {
           return (a.priority > b.priority) ? -1 : 1
         }

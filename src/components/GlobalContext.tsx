@@ -30,6 +30,10 @@ interface GlobalContextProps {
     Grouping: 'Status' | 'Priority' | 'User';
     Ordering: 'Priority' | 'Title';
   }>>
+  loading: boolean
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  refresh: boolean
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
@@ -42,7 +46,11 @@ export const GlobalContext = createContext<GlobalContextProps>({
     Grouping: "Status",
     Ordering: "Priority"
   },
-  setDisplayBy: () => { }
+  setDisplayBy: () => { },
+  loading: true,
+  setLoading: () => { },
+  refresh: true,
+  setRefresh: () => { }
 });
 
 export default function GlobalContextProvider({
@@ -50,33 +58,43 @@ export default function GlobalContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>(localStorage.getItem('theme') as ('light' | 'dark' | undefined) ?? 'light')
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [tickets, setTickets] = useState<any[]>([])
   const [users, setUsers] = useState<any[]>([])
   const [refresh, setRefresh] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [displayBy, setDisplayBy] = useState<{
     Grouping: 'Status' | 'Priority' | 'User';
     Ordering: 'Priority' | 'Title';
-  }>(localStorage?.getItem('displayBy') ? JSON.parse(localStorage.getItem('displayBy') ?? "{}") : {
+  }>({
     Grouping: "Status",
     Ordering: "Priority"
   })
   const API_URL = process?.env?.NEXT_PUBLIC_API_URL ?? ""
 
   useEffect(() => {
-    localStorage.setItem('theme', theme)
-    localStorage.setItem('displayBy', JSON.stringify(displayBy))
-  }, [displayBy, theme])
+    if (typeof window !== 'undefined') {
+      if (localStorage.getItem('theme') === 'dark') {
+        setTheme('dark')
+      }
+      if (localStorage.getItem('displayBy')) {
+        setDisplayBy(JSON.parse(localStorage.getItem('displayBy') ?? "{}"))
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!refresh) {
+      setLoading(true)
       fetch(API_URL).then(res => res.json()).then(data => {
         console.log(data)
         setTickets(data.tickets)
         setUsers(data.users)
+        setLoading(false)
         toast.success("Tickets and users Fetched")
       }).catch((err) => {
         console.log(err)
+        setLoading(false)
         setRefresh(true)
         toast.error("Error Fetching Tickets and users")
       })
@@ -84,7 +102,7 @@ export default function GlobalContextProvider({
   }, [refresh])
 
   return (
-    <GlobalContext.Provider value={{ theme, setTheme, tickets, users, displayBy, setDisplayBy }}>
+    <GlobalContext.Provider value={{ theme, setTheme, tickets, users, displayBy, setDisplayBy, loading, setLoading,refresh, setRefresh }}>
       {children}
     </GlobalContext.Provider>
   );

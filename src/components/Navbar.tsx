@@ -2,7 +2,7 @@
 import React, { useContext, useState } from 'react'
 import { GlobalContext } from './GlobalContext'
 import { FaMoon, FaSun } from "react-icons/fa";
-import { ThemeColors } from '../app/layout';
+import { ThemeColors } from './Layout';
 import { GiSettingsKnobs } from "react-icons/gi";
 import { IoIosArrowDown } from "react-icons/io";
 import ShadowContainer from './atoms/ShadowContainer';
@@ -17,9 +17,10 @@ export default function Navbar() {
     }}>
       <DisplayDropDownMenu />
       <div onClick={() => {
+        localStorage.setItem('theme', theme === 'light' ? 'dark' : 'light')
         setTheme(theme === 'light' ? 'dark' : 'light')
       }}
-      className='p-2 rounded-full cursor-pointer hover:bg-gray-600/30'
+        className='p-2 rounded-full cursor-pointer hover:bg-gray-600/30'
       >
         {theme == 'light' ? <FaMoon /> : <FaSun />}
 
@@ -43,9 +44,11 @@ const DisplayDropDownMenu = () => {
       {isMenuOpen &&
         <ShadowContainer className='absolute top-[125%] flex flex-col gap-3 w-[300px] z-10'>
           <SelectMenu name='Grouping' label='Grouping' options={['Status', 'User', 'Priority']} theme={theme} value={displayBy.Grouping} setValue={(value) => {
+            localStorage.setItem('displayBy', JSON.stringify({ ...displayBy, Grouping: value }))
             setDisplayBy({ ...displayBy, Grouping: value })
           }} />
           <SelectMenu name='Ordering' label='Ordering' options={['Priority', 'Title']} theme={theme} value={displayBy.Ordering} setValue={(value) => {
+            localStorage.setItem('displayBy', JSON.stringify({ ...displayBy, Ordering: value }))
             setDisplayBy({ ...displayBy, Ordering: value })
           }} />
         </ShadowContainer>
